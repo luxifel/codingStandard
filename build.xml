@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project default="build" basedir="./">
+    <!-- ### Settings -->
+    <!-- Available tools -->
+    <property name="phpmd" value="./vendor/bin/phpmd" />
+    <property name="phpcpd" value="./vendor/bin/phpcpd" />
+    <property name="phpcsfixer" value="./vendor/bin/php-cs-fixer" />
+    <property name="phpcbf" value="vendor/bin/phpcbf" />
+    <property name="phpcs" value="vendor/bin/phpcs" />
+
+    <!-- Project directories -->
+    <property name="module" value="test/custom/module" />
+
+    <!-- ### Main Tasks -->
+    <!-- Build project -->
+    <target name="build"
+            description="Perform syntax check and mess detection of sourcecode files, find duplicate code"
+            depends="verify, analyze" />
+
+    <!-- Verify code consistency -->
+    <target name="verify"
+            description="Perform syntax check of sourcecode files"
+            depends="lint-php"
+            hidden="true" />
+
+    <!-- Analyze code -->
+    <target name="analyze"
+            description="Perform project mess detection, find duplicate code"
+            depends="phpmd, phpcs, phpcpd"
+            hidden="true" />
+
+    <!-- Code Style fixes -->
+    <target name="style"
+            description="Find coding standard violations and print human readable output"
+            depends="phpcsfixer, phpcbf" />
+
+    <!-- ### Subtasks -->
+    <!-- PHP linting -->
+    <target name="lint-php"
+            unless="lint.done"
+            hidden="true">
+        <phplint haltonfailure="true" deprecatedAsError="true">
+            <fileset dir="${module}">
+                <include name="**/*.php" />
+                <include name="**/*.phtml" />
+            </fileset>
+        </phplint>
+        <property name="lint.done" value="true" />
+    </target>
+
+    <!-- PHP Mess Detector -->
+    <target name="phpmd"
+            unless="phpmd.done"
+            hidden="true">
+        <exec executable="${phpmd}"
+              logoutput="true"
+              checkreturn="true"
+              passthru="true">
+            <arg line="${module} text ./phpmd.xml" />
+        </exec>
+        <property name="phpmd.done" value="true" />
+    </target>
+
+    <!-- PHP Coding Standards Fixer -->
+    <target name="phpcsfixer"
+            unless="phpcsfixer.done"
+            hidden="true">
+        <exec logoutput="true"
+              executable="${phpcsfixer}"
+              checkreturn="true"
+              passthru="true">
+            <arg line="fix ${module} --config=./.php_cs.dist -v" />
+        </exec>
+        <property name="phpcsfixer.done" value="true" />
+    </target>
+
+    <!-- PHP Coding Standards Fixer - Dry Run -->
+    <target name="phpcsfixer-dry-run"
+            unless="phpcsfixer.done"
+            hidden="true">
+        <exec logoutput="true"
+              executable="${phpcsfixer}"
+              checkreturn="true"
+              passthru="true">
+            <arg line="fix ${module} --config=./.php_cs.dist --dry-run -v" />
+        </exec>
+        <property name="phpcsfixer.done" value="true" />
+    </target>
+
+    <!-- PHP Beautifier -->
+    <target name="phpcbf"
+            unless="phpcbf.done"
+            hidden="true">
+        <exec logoutput="true"
+              executable="${phpcbf}"
+              checkreturn="true"
+              passthru="true">
+            <arg line="--extensions=php,phtml,css,js ${module}" />
+        </exec>
+        <property name="phpcbf.done" value="true" />
+    </target>
+
+    <!-- PHP Code Style -->
+    <target name="phpcs"
+            unless="phpcs.done"
+            hidden="true">
+        <exec logoutput="true"
+              executable="${phpcs}"
+              checkreturn="true"
+              passthru="true">
+            <arg line="--standard=./vendor/magento-ecg/coding-standard/Ecg --extensions=php,phtml,css,js ${module} -v" />
+        </exec>
+        <property name="phpcs.done" value="true" />
+    </target>
+
+    <!-- PHP Copy/Paste Detector -->
+    <target name="phpcpd"
+            unless="phpcpd.done"
+            hidden="true">
+        <phpcpd>
+            <fileset dir="${module}">
+                <include name="**/*.php" />
+                <include name="**/*.phtml" />
+            </fileset>
+            <formatter type="default" useFile="false" />
+        </phpcpd>
+        <property name="phpcpd.done" value="true" />
+    </target>
+
+</project>

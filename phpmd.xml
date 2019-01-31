@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ruleset name="triboo-coding-standard"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0
+                      http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
+    <description>Triboo Coding Standard</description>
+
+    <!-- @see https://phpmd.org/rules/cleancode.html -->
+    <rule ref="rulesets/cleancode.xml">
+        <!-- skip because of Mage:: -->
+        <exclude name="StaticAccess" />
+        <!-- We're not yet ready to get rid of ALL else expressions :) -->
+        <exclude name="ElseExpression" />
+    </rule>
+
+    <!-- @see https://phpmd.org/rules/codesize.html -->
+    <rule ref="rulesets/codesize.xml" />
+
+    <!-- @see https://phpmd.org/rules/controversial.html -->
+    <rule ref="rulesets/controversial.xml">
+        <!-- Not possible to follow these rules since we're on ZF1 -->
+        <exclude name="CamelCaseClassName" />
+        <exclude name="CamelCasePropertyName" />
+        <exclude name="CamelCaseMethodName" />
+        <exclude name="CamelCaseParameterName" />
+        <!--<exclude name="CamelCaseVariableName" />-->
+    </rule>
+
+    <!-- @see https://phpmd.org/rules/design.html -->
+    <rule ref="rulesets/design.xml" />
+
+    <!-- @see https://phpmd.org/rules/naming.html -->
+    <rule ref="rulesets/naming.xml">
+        <exclude name="ShortVariable"/>
+        <!-- as we want to ::override it -->
+        <exclude name="LongVariable" />
+    </rule>
+
+    <rule ref="rulesets/naming.xml/LongVariable">
+        <properties>
+            <!-- 20 by default; there's no limit in PSR 1/2 -->
+            <property name="maximum" value="30" />
+        </properties>
+    </rule>
+
+    <!-- @see https://phpmd.org/rules/unusedcode.html -->
+    <rule ref="rulesets/unusedcode.xml" />
+</ruleset>
