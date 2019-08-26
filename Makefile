@@ -11,6 +11,13 @@ build:
 style:
 	vendor/bin/phing style
 
+concat:
+	gulp concat
+
+purge:
+	gulp purge
+
+
 
 phing:
 	   echo vendor/bin/phing -Dmodule=path/custom/module

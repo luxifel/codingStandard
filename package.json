@@ -1,0 +1,31 @@
+{
+  "name": "codingstandard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luxifel/codingStandard.git"
+  },
+  "author": "Nicola Olivetto",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luxifel/codingStandard/issues"
+  },
+  "homepage": "https://github.com/luxifel/codingStandard#readme",
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-concat-css": "^3.1.0",
+    "gulp-css-purge": "^3.0.9"
+  },
+  "dependencies": {
+    "css-purge": "^3.1.8"
+  }
+}
