@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project default="build" basedir="./">
+<project default="start" basedir="./">
     <!-- ### Settings -->
     <!-- Available tools -->
     <property name="phpmd" value="./vendor/bin/phpmd" />
     <property name="phpcpd" value="./vendor/bin/phpcpd" />
     <property name="phpcsfixer" value="./vendor/bin/php-cs-fixer" />
     <property name="phpcs" value="vendor/bin/phpcs" />
+    <property name="phpcbf" value="vendor/bin/phpcbf" />
     <property name="phpspec" value="bin/phpspec" />
 
     <!-- Project directories -->
@@ -32,7 +33,7 @@
     <!-- Code Style fixes -->
     <target name="fix"
             description="Find coding standard violations and print human readable output"
-            depends="phpcsfixer" />
+            depends="phpcbf, phpcsfixer" />
 
 
     <target name="dryrun"
@@ -53,21 +54,32 @@
         </phplint>
         <property name="lint.done" value="true" />
     </target>
-    <!-- PHP Code Style -->
+
+    <!-- PHP Code Sniffer -->
     <target name="phpcs"
             unless="phpcs.done"
             hidden="true">
         <exec logoutput="true"
               executable="${phpcs}"
-              checkreturn="true"
               passthru="true"
-              output="logs/phpcs.log"
-              >
-            <arg line="--standard=PSR1,PSR2 --extensions=php ${module} -v" />
+              output="logs/phpcs.log">
+            <arg line="--standard=PSR12 ${module} -v" />
         </exec>
         <property name="phpcs.done" value="true" />
     </target>
 
+    <!-- PHP Code Fixer -->
+    <target name="phpcbf"
+            unless="phpcbf.done"
+            hidden="true">
+        <exec logoutput="true"
+              executable="${phpcbf}"
+              passthru="true"
+              output="logs/phpcbf.log">
+            <arg line="--standard=PSR12 ${module} -v" />
+        </exec>
+        <property name="phpcbf.done" value="true" />
+    </target>
 
     <!-- PHP Mess Detector -->
     <target name="phpmd"
@@ -75,8 +87,7 @@
             hidden="true">
         <exec executable="${phpmd}"
               logoutput="true"
-              checkreturn="true"
-              output="log/phpmd.log"
+              output="logs/phpmd.log"
               passthru="true">
             <arg line="${module} text ./phpmd.xml" />
         </exec>
@@ -89,10 +100,9 @@
             hidden="true">
         <exec logoutput="true"
               executable="${phpcsfixer}"
-              checkreturn="true"
-              output="logs/phpfix.log"
+              output="logs/fixed.log"
               passthru="true">
-            <arg line="fix ${module} --config=./.php-cs-fixer.dist.php -v" />
+            <arg line="fix ${module} -v" />
         </exec>
         <property name="phpcsfixer.done" value="true" />
     </target>
@@ -103,10 +113,9 @@
             hidden="true">
         <exec logoutput="true"
               executable="${phpcsfixer}"
-              checkreturn="true"
-              output="logs/phpfix.log"
+              output="logs/tofix.log"
               passthru="true">
-            <arg line="fix ${module} --config=./.php-cs-fixer.dist.php --dry-run -v" />
+            <arg line="fix ${module} --dry-run -vv" />
         </exec>
         <property name="phpcsfixer.done" value="true" />
     </target>

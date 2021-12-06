@@ -21,4 +21,4 @@ purge:
 	gulp purge
 
 phing:
-	   echo vendor/bin/phing -Dmodule=path/custom/module
+	vendor/bin/phing -Dmodule=./
