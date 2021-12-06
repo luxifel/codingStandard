@@ -5,15 +5,15 @@
     <property name="phpmd" value="./vendor/bin/phpmd" />
     <property name="phpcpd" value="./vendor/bin/phpcpd" />
     <property name="phpcsfixer" value="./vendor/bin/php-cs-fixer" />
-    <property name="phpcbf" value="vendor/bin/phpcbf" />
     <property name="phpcs" value="vendor/bin/phpcs" />
+    <property name="phpspec" value="bin/phpspec" />
 
     <!-- Project directories -->
     <property name="module" value="test/custom/module" />
 
     <!-- ### Main Tasks -->
     <!-- Build project -->
-    <target name="build"
+    <target name="start"
             description="Perform syntax check and mess detection of sourcecode files, find duplicate code"
             depends="verify, analyze" />
 
@@ -30,9 +30,15 @@
             hidden="true" />
 
     <!-- Code Style fixes -->
-    <target name="style"
+    <target name="fix"
             description="Find coding standard violations and print human readable output"
-            depends="phpcsfixer, phpcbf" />
+            depends="phpcsfixer" />
+
+
+    <target name="dryrun"
+            description="Find coding standard violations and print human readable outup fix dryrun"
+            depends="phpcsfixer-dry-run" />
+
 
     <!-- ### Subtasks -->
     <!-- PHP linting -->
@@ -42,11 +48,26 @@
         <phplint haltonfailure="true" deprecatedAsError="true">
             <fileset dir="${module}">
                 <include name="**/*.php" />
-                <include name="**/*.phtml" />
+                <include name="*.php" />
             </fileset>
         </phplint>
         <property name="lint.done" value="true" />
     </target>
+    <!-- PHP Code Style -->
+    <target name="phpcs"
+            unless="phpcs.done"
+            hidden="true">
+        <exec logoutput="true"
+              executable="${phpcs}"
+              checkreturn="true"
+              passthru="true"
+              output="logs/phpcs.log"
+              >
+            <arg line="--standard=PSR1,PSR2 --extensions=php ${module} -v" />
+        </exec>
+        <property name="phpcs.done" value="true" />
+    </target>
+
 
     <!-- PHP Mess Detector -->
     <target name="phpmd"
@@ -55,6 +76,7 @@
         <exec executable="${phpmd}"
               logoutput="true"
               checkreturn="true"
+              output="log/phpmd.log"
               passthru="true">
             <arg line="${module} text ./phpmd.xml" />
         </exec>
@@ -68,8 +90,9 @@
         <exec logoutput="true"
               executable="${phpcsfixer}"
               checkreturn="true"
+              output="logs/phpfix.log"
               passthru="true">
-            <arg line="fix ${module} --config=./.php_cs.dist -v" />
+            <arg line="fix ${module} --config=./.php-cs-fixer.dist.php -v" />
         </exec>
         <property name="phpcsfixer.done" value="true" />
     </target>
@@ -81,36 +104,11 @@
         <exec logoutput="true"
               executable="${phpcsfixer}"
               checkreturn="true"
+              output="logs/phpfix.log"
               passthru="true">
-            <arg line="fix ${module} --config=./.php_cs.dist --dry-run -v" />
+            <arg line="fix ${module} --config=./.php-cs-fixer.dist.php --dry-run -v" />
         </exec>
         <property name="phpcsfixer.done" value="true" />
-    </target>
-
-    <!-- PHP Beautifier -->
-    <target name="phpcbf"
-            unless="phpcbf.done"
-            hidden="true">
-        <exec logoutput="true"
-              executable="${phpcbf}"
-              checkreturn="true"
-              passthru="true">
-            <arg line="--extensions=php,phtml,css,js ${module}" />
-        </exec>
-        <property name="phpcbf.done" value="true" />
-    </target>
-
-    <!-- PHP Code Style -->
-    <target name="phpcs"
-            unless="phpcs.done"
-            hidden="true">
-        <exec logoutput="true"
-              executable="${phpcs}"
-              checkreturn="true"
-              passthru="true">
-            <arg line="--standard=./vendor/magento-ecg/coding-standard/Ecg --extensions=php,phtml,css,js ${module} -v" />
-        </exec>
-        <property name="phpcs.done" value="true" />
     </target>
 
     <!-- PHP Copy/Paste Detector -->
@@ -120,11 +118,23 @@
         <phpcpd>
             <fileset dir="${module}">
                 <include name="**/*.php" />
-                <include name="**/*.phtml" />
+                <include name="*.php" />
             </fileset>
-            <formatter type="default" useFile="false" />
+            <formatter type="pmd" outfile="logs/phpcpd.xml" />
         </phpcpd>
         <property name="phpcpd.done" value="true" />
     </target>
+
+    <target name="phpspec">
+        <exec executable="bin/phpspec" passthru="true" checkreturn="true">
+            <arg line="run --format=pretty"/>
+        </exec>
+    </target>
+
+<target name="phpspec">
+    <exec executable="${phpspec}" passthru="true" checkreturn="true">
+        <arg line="run --format=pretty"/>
+    </exec>
+</target>
 
 </project>
