@@ -185,7 +185,7 @@ class Magic_Checkout_IndexController extends Mage_Core_Controller_Front_Action
                             $this->getResponse()->clearHeaders()->setHeader('Content-type', 'application/json', true);
 
                             return $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($response));
-                            //return $this->_jsonResultFactory->create()->setData($response);
+                            // return $this->_jsonResultFactory->create()->setData($response);
                         } catch (Exception $e) {
                             $this->_helper->log($e->getMessage());
                             $response['text'] = $this->_helper->handleErrors(self::OUT_OF_STOCK);
